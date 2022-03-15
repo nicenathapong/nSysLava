@@ -100,6 +100,7 @@ export class nSysQueue {
     public isAutoplay: boolean;
     constructor(player: nSysPlayer);
     public add(tracks: lavalinkTrack | lavalinkTrack[], requester?: string): boolean;
+    public remove(index: number): boolean;
     public start(): Promise<boolean>;
     public skip(): Promise<void>;
     public toPrevious(): Promise<boolean>;

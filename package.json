@@ -1,6 +1,6 @@
 {
   "name": "nsyslava",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lavalink client with lots of extra functionality, easy to use and well optimized.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,7 +10,7 @@
   },
   "main": "./dist/index.js",
   "types": "./typings/index.d.ts",
-  "keywords": ["lavalink", "nSys", "nicenathapong"],
+  "keywords": ["lavalink", "discord", "nSys", "nicenathapong"],
   "author": "nicenathapong",
   "license": "ISC",
   "dependencies": {

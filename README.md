@@ -1,9 +1,9 @@
 # **📘 nSysLava**
 > Lavalink client with lots of extra functionality, easy to use and well optimized!
-- **Many utility functions** - มีฟังก์ชันอรรถประโยชน์มากมาย
-- **Lightweight and high efficiency** - เบาและมีประสิทธิภาพสูง
 
 **พัฒนาโดยคนไทย 😳**
+- **Many utility functions** - มีฟังก์ชันอรรถประโยชน์มากมาย
+- **Lightweight and high efficiency** - เบาและมีประสิทธิภาพสูง
 
 ## **❤️ Interesting function / ฟังก์ชันที่น่าสนใจ**
 
@@ -11,7 +11,7 @@
 - **Autoplay**
 
 ## **📖 Installation / วิธีการติดตั้ง**
-required [**Node.js v16+**](https://nodejs.org/en/)
+required [**Node.js**](https://nodejs.org/en/) v16+
 ```shell
 npm i nsyslava
 ```
@@ -84,6 +84,12 @@ player.queue.remove(4);
 // shuffle
 player.queue.shuffle();
 
+// loop
+// 0 = none
+// 1 = queue
+// 2 = track
+player.queue.setLoop(2);
+
 // Autoplay
 player.queue.setAutoplay(true);
 
@@ -95,12 +101,6 @@ player.setVolume(100);
 
 // seek
 player.seek(37000);
-
-// loop
-// 0 = none
-// 1 = queue
-// 2 = track
-player.setLoop(2);
 
 // Destroy player
 manager.destroy(guildId)

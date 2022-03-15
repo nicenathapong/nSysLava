@@ -1,4 +1,4 @@
 node_modules
-dist2
+dist
 tsconfig.json
 package-lock.json

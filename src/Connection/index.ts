@@ -29,8 +29,10 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
     }
 
     private async ping(): Promise<boolean> {
-        const res = await axios.get(this.httpUrl).catch(e => e.response?.status);
-        if (!res) return false;
+        const code = await axios.get(this.httpUrl, {
+            headers: { authorization: this.authorization }
+        }).then(_ => _?.status).catch(e => e.response?.status);
+        if (code !== 400) return false;
         return true;
     }
 

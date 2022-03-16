@@ -1,6 +1,6 @@
 {
   "name": "nsyslava",
-  "version": "1.0.2",
+  "version": "1.0.21",
   "description": "Lavalink client with lots of extra functionality, easy to use and well optimized.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

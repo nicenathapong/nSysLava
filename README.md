@@ -11,6 +11,8 @@
 - **Autoplay**
 
 ## **📌 Links**
+- [**Github**](https://github.com/nicenathapong/nSysLava)
+- [**npm**](https://www.npmjs.com/package/nsyslava)
 
 ## **📖 Installation / วิธีการติดตั้ง**
 required [**Node.js**](https://nodejs.org/en/) v16+

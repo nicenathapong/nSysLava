@@ -47,7 +47,6 @@ export class nSysManager extends TypedEmitter<managerEvents> {
 
     createPlater(guildId: string): nSysPlayer | null {
         const node = Array.from(this.nodes.values()).filter(node => node.isConnected || (node.play || node.play === undefined)).sort((a, b) => a.players.size - b.players.size).at(0);
-        console.log(node);
         if (!node) return null;
         return node.createPlater(guildId);
     }

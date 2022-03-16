@@ -6,23 +6,16 @@ import { loopMode } from './interface'
 
 export class nSysQueue {
     public player: nSysPlayer;
-    public previous: lavalinkTrack[]
-    public current: lavalinkTrack | null
-    public tracks: lavalinkTrack[]
-    public loop: loopMode
-    public isAutoplay: boolean
+    public previous: lavalinkTrack[] = [];
+    public current: lavalinkTrack | null = null;
+    public tracks: lavalinkTrack[] = [];
+    public loop: loopMode = loopMode.NONE;
+    public isAutoplay: boolean = false;
 
-    private isPrevious: boolean
+    private isPrevious: boolean = false;
 
     constructor(player: nSysPlayer) {
         this.player = player;
-        this.previous = [];
-        this.current = null;
-        this.tracks = [];
-        this.loop = loopMode.NONE;
-        this.isAutoplay = false;
-
-        this.isPrevious = false;
     }
 
     add(tracks: lavalinkTrack | lavalinkTrack[], requester?: string): boolean {

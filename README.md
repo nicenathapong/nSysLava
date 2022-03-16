@@ -10,6 +10,8 @@
 - **Queue System**
 - **Autoplay**
 
+## **📌 Links**
+
 ## **📖 Installation / วิธีการติดตั้ง**
 required [**Node.js**](https://nodejs.org/en/) v16+
 ```shell

@@ -8,7 +8,7 @@ import { managerEvents } from './interface';
 
 export class nSysManager extends TypedEmitter<managerEvents> {
     public readonly nodes: Map<string, nSysNode>
-    public userId: string | null;
+    public userId: string | null = null
 
     constructor(nodes: NodeConfig[]) {
         super();
@@ -20,7 +20,6 @@ export class nSysManager extends TypedEmitter<managerEvents> {
                 ]
             ))
         );
-        this.userId = null;
 
         // handles events from nodes
         Array.from(this.nodes.values()).forEach(node => this.handlesNodeEvents(node));
@@ -47,7 +46,8 @@ export class nSysManager extends TypedEmitter<managerEvents> {
     }
 
     createPlater(guildId: string): nSysPlayer | null {
-        const node = Array.from(this.nodes.values()).filter(node => node.isConnected || (node.play || node.play === undefined)).sort((a, b) => a.players.size - b.players.size).at(0)
+        const node = Array.from(this.nodes.values()).filter(node => node.isConnected || (node.play || node.play === undefined)).sort((a, b) => a.players.size - b.players.size).at(0);
+        console.log(node);
         if (!node) return null;
         return node.createPlater(guildId);
     }

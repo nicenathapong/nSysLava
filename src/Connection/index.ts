@@ -13,8 +13,9 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
     private reconnectDefault: number
 
     private readonly authorization: string
-    private ws: WebSocket | null
-    private payloadQueue: object[]
+    private ws: WebSocket | null = null
+    private payloadQueue: object[] = []
+    private isNotReconnect: boolean = false;
 
     constructor(config: ConnectionConfig) {
         super();
@@ -22,14 +23,29 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
         this.url = `ws${config.secure ? 's' : ''}://${config.host}:${config.port}`
         this.httpUrl = `http${config.secure ? 's' : ''}://${config.host}:${config.port}`
         this.authorization = config.authorization;
-        this.clientName = config.clientName || 'nSysClient';
+        this.clientName = config.clientName || 'nSysLava';
         this.reconnect = config.reconnect;
-        this.reconnectDefault = this.reconnect?.retryAmout ?? 99
-        this.ws = null
-        this.payloadQueue = [];
+        this.reconnectDefault = this.reconnect?.retryAmout ?? 99;
     }
 
-    connect(userId: string): void {
+    private async ping(): Promise<boolean> {
+        const res = await axios.get(this.httpUrl).catch(e => e.response?.status);
+        if (!res) return false;
+        return true;
+    }
+
+    async connect(userId: string): Promise<void | any> {
+        const online = await this.ping();
+        if (!online) {
+            if (this.reconnect) {
+                this.reconnect.retryAmout--
+                this.emit('reconnecting', this.reconnect?.retryAmout)
+                if (this.reconnect.retryAmout === 0) return this.emit('reconnectingFull');
+                await new Promise(resolve => setTimeout(resolve, this.reconnect?.delay ?? 3000));
+                return this.connect(userId);  
+            }
+            return;
+        }
         this.ws = new WebSocket(this.url, {
             headers: {
                 'Authorization': this.authorization,
@@ -46,14 +62,15 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
         this.ws.once('close', async () => {
             this.connected = false;
             this.emit('disconnected');
-            if (this.reconnect) while (this.reconnect?.retryAmout) {
-                const ping = await axios.get(this.httpUrl).catch(e => e.response?.status);
-                if (ping) return this.connect(userId);
+            if (this.reconnect && !this.isNotReconnect) while (this.reconnect?.retryAmout) {
+                const online = await this.ping();
+                if (online) return this.connect(userId);
                 this.emit('reconnecting', this.reconnect?.retryAmout)
                 this.reconnect.retryAmout--
                 if (this.reconnect.retryAmout === 0) return this.emit('reconnectingFull')
-                await new Promise(resolve => setTimeout(resolve, this.reconnect?.delay))
+                await new Promise(resolve => setTimeout(resolve, this.reconnect?.delay ?? 3000))
             }
+            if (this.isNotReconnect) this.isNotReconnect = false;
         });
         this.ws.on('message', (message: string) => {
             message = JSON.parse(message);
@@ -62,11 +79,10 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
     }
 
     disconnect(): boolean {
-        if (this.ws && this.connected) {
-            this.ws.close();
-            return true;
-        }
-        return false;
+        if (!this.ws || !this.connected) return false;
+        this.isNotReconnect = true;
+        this.ws.close();
+        return true
     }
 
     async send(data: object, promise = false): Promise<void> {

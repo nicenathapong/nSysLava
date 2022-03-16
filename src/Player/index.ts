@@ -10,14 +10,14 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
     public readonly node: nSysNode
     public readonly userId: string | null;
     public readonly guildId: string
-    public channelId: string | null
-    public isPlaying: boolean
-    public position: number;
-    public isPaused: boolean;
+    public channelId: string | null = null;
+    public isPlaying: boolean = false;
+    public position: number = 0;
+    public isPaused: boolean = false;
     
     public manager?: nSysManager
 
-    private voiceState: Record<string, any>
+    private voiceState: Record<string, any> = {};
 
     constructor(node: nSysNode, guildId: string, manager?: nSysManager) {
         super();
@@ -25,11 +25,6 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
         this.node = node;
         this.userId = node.userId;
         this.guildId = guildId;
-        this.channelId = null;
-        this.isPlaying = false;
-        this.position = 0;
-        this.isPaused = false;
-        this.voiceState = {};
         this.manager = manager;
         // if (this.manager) this.manager.loadTracks('https://cdn.discordapp.com/attachments/828651362093891605/951606009577738350/nSysClientIsPlayingNow.mp3').then(res => this.queue.add(res.tracks[0]));
     }

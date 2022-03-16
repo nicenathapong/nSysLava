@@ -3,7 +3,7 @@ import nSysConnection from "../Connection";
 import axios from "axios";
 import { decode } from '@lavalink/encoding'
 
-import { NodeConfig, lavalinkLoadtracks, lavalinkStats, nodeEvents } from "./interface";
+import { NodeConfig, lavalinkLoadtracks, lavalinkStats, nodeEvents, lavalinkTrack } from "./interface";
 import { ConnectionConfig } from "../Connection/interface";
 import { nSysPlayer } from "../Player";
 import { VoiceUpdate } from "../Player/interface";
@@ -15,14 +15,31 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
     public readonly config: NodeConfig
     public readonly info: ConnectionConfig
     public conn: nSysConnection
-    public userId: string | null;
-
-    public readonly players: Map<string, nSysPlayer>
-
+    public userId: string | null = null;
+    public readonly players: Map<string, nSysPlayer> = new Map<string, nSysPlayer>();
     public search: boolean
     public play: boolean
-
-    public stats: lavalinkStats;
+    public stats: lavalinkStats = {
+        cpu: {
+            cores: 0,
+            lavalinkLoad: 0,
+            systemLoad: 0
+        },
+        frameStats: {
+            deficit: 0,
+            nulled: 0,
+            sent: 0
+        },
+        memory: {
+            allocated: 0,
+            free: 0,
+            reservable: 0,
+            used: 0
+        },
+        players: 0,
+        playingPlayers: 0,
+        uptime: 0
+    }
     public manager?: nSysManager
 
     constructor(config: NodeConfig, manager?: nSysManager) {
@@ -82,37 +99,12 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
                     break;
             }
         })
-
-        this.userId = null;
-        this.players = new Map<string, nSysPlayer>();
         this.search = this.config.search ? true : false
-        this.play = this.config.play ? true : false
-        this.stats = {
-            cpu: {
-                cores: 0,
-                lavalinkLoad: 0,
-                systemLoad: 0
-            },
-            frameStats: {
-                deficit: 0,
-                nulled: 0,
-                sent: 0
-            },
-            memory: {
-                allocated: 0,
-                free: 0,
-                reservable: 0,
-                used: 0
-            },
-            players: 0,
-            playingPlayers: 0,
-            uptime: 0
-        }
-
+        this.play = this.config.play ? true : false;
         this.manager = manager;
     }
 
-    decodeTrack(track: string) {
+    decodeTrack(track: string): lavalinkTrack {
         const decoded = decode(track)
         return {
             track, info: {
@@ -133,7 +125,7 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
         this.players.get(update?.guild_id)?.handleVoiceUpdate(update);
     }
 
-    connect(userId: string): void {
+    async connect(userId: string): Promise<void> {
         this.userId = userId;
         this.conn.connect(userId);
     }

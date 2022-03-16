@@ -1,5 +1,5 @@
-import { nSysManager } from "../Manager";
 import { lavalinkLoadtracks, lavalinkTrack } from "../Node/interface";
+
 import { nSysPlayer } from "../Player";
 
 import { loopMode } from './interface'

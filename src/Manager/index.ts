@@ -1,12 +1,14 @@
 import { TypedEmitter } from 'tiny-typed-emitter'
 
 import { nSysNode } from "../Node";
-import { lavalinkLoadtracks, NodeConfig, payloadData } from '../Node/interface'
 import { nSysPlayer } from '../Player';
-import { VoiceUpdate } from "../Player/interface";
-import { managerEvents } from './interface';
 
-export class nSysManager extends TypedEmitter<managerEvents> {
+import { ManagerEvents } from './interface';
+
+import { lavalinkLoadtracks, NodeConfig, payloadData } from '../Node/interface'
+import { VoiceUpdate } from "../Player/interface";
+
+export class nSysManager extends TypedEmitter<ManagerEvents> {
     public readonly nodes: Map<string, nSysNode>
     public userId: string | null = null
 

@@ -3,11 +3,13 @@ import nSysConnection from "../Connection";
 import axios from "axios";
 import { decode } from '@lavalink/encoding'
 
-import { NodeConfig, lavalinkLoadtracks, lavalinkStats, nodeEvents, lavalinkTrack } from "./interface";
-import { ConnectionConfig } from "../Connection/interface";
-import { nSysPlayer } from "../Player";
-import { VoiceUpdate } from "../Player/interface";
 import { nSysManager } from '../Manager';
+import { nSysPlayer } from "../Player";
+
+import { NodeConfig, lavalinkLoadtracks, lavalinkStats, nodeEvents, lavalinkTrack } from "./interface";
+
+import { ConnectionConfig } from "../Connection/interface";
+import { VoiceUpdate } from "../Player/interface";
 
 export class nSysNode extends TypedEmitter<nodeEvents> {
     public isConnected: boolean

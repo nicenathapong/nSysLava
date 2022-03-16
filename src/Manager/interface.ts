@@ -15,7 +15,7 @@ export interface lavalinkNode {
     play?: boolean
 }
 
-export interface managerEvents {
+export interface ManagerEvents {
     sendGatewayPayload: (guildId: string, payload: payloadData) => void
     nodeConnect: (node: nSysNode) => void
     nodeDisconnect: (node: nSysNode) => void

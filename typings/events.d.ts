@@ -1,3 +1,5 @@
+import { payloadData, lavalinkTrack } from './interface';
+
 export interface ConnectionEvents {
     connected: () => void
     disconnected: () => void

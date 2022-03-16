@@ -1,8 +1,9 @@
 import { TypedEmitter } from 'tiny-typed-emitter'
-import { nSysManager } from '../Manager';
 
 import { nSysNode } from "../Node";
+import { nSysManager } from '../Manager';
 import { nSysQueue } from "../Queue";
+
 import { playerEvents, VoiceUpdate, connectOptions } from "./interface";
 
 export class nSysPlayer extends TypedEmitter<playerEvents> {

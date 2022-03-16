@@ -46,7 +46,7 @@ export class nSysManager extends TypedEmitter<managerEvents> {
     }
 
     createPlater(guildId: string): nSysPlayer | null {
-        const node = Array.from(this.nodes.values()).filter(node => node.isConnected || (node.play || node.play === undefined)).sort((a, b) => a.players.size - b.players.size).at(0);
+        const node = Array.from(this.nodes.values()).filter(node => node.isConnected && node.play).sort((a, b) => a.players.size - b.players.size).at(0);
         if (!node) return null;
         return node.createPlater(guildId);
     }
@@ -87,7 +87,7 @@ export class nSysManager extends TypedEmitter<managerEvents> {
     }
 
     async loadTracks(search: string): Promise<lavalinkLoadtracks> {
-        const nodes = Array.from(this.nodes.values()).filter(node => node.isConnected && (node.play || node.search === undefined));
+        const nodes = Array.from(this.nodes.values()).filter(node => node.isConnected && node.search);
         let node = nodes.find(Boolean)
         if (!node) return {
             loadType: 'LOAD_FAILED',

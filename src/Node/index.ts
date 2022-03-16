@@ -17,8 +17,8 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
     public conn: nSysConnection
     public userId: string | null = null;
     public readonly players: Map<string, nSysPlayer> = new Map<string, nSysPlayer>();
-    public search: boolean
-    public play: boolean
+    public search: boolean;
+    public play: boolean;
     public stats: lavalinkStats = {
         cpu: {
             cores: 0,
@@ -99,8 +99,8 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
                     break;
             }
         })
-        this.search = this.config.search ? true : false
-        this.play = this.config.play ? true : false;
+        this.search = (this.config.search || this.config.search === undefined) ? true : false;
+        this.play = (this.config.play || this.config.play === undefined) ? true : false;
         this.manager = manager;
     }
 
@@ -135,7 +135,7 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
     } 
 
     createPlater(guildId: string): nSysPlayer | null {
-        if (!this.config.play) return null;
+        if (!this.play) return null;
         const player = new nSysPlayer(this, guildId, this.manager);
         this.players.set(guildId, player);
         return player;
@@ -154,6 +154,11 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
     }
 
     async loadTracks(search: string): Promise<lavalinkLoadtracks> {
+        if (!this.search) return {
+            playlistInfo: {},
+            loadType: 'LOAD_FAILED',
+            tracks: []
+        }
         if (!search.match(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/ig)) search = `ytsearch:${search}`;
         return axios.get(`${this.conn.httpUrl}/loadtracks?identifier=${encodeURIComponent(search)}`, {
             headers: { Authorization: this.info.authorization }

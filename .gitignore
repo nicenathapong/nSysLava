@@ -2,3 +2,4 @@ node_modules
 dist
 tsconfig.json
 package-lock.json
+version-plan.txt

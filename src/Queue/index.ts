@@ -21,7 +21,7 @@ export class nSysQueue {
     add(tracks: lavalinkTrack | lavalinkTrack[], requester?: string): boolean {
         if (!Array.isArray(tracks)) tracks = [ tracks ];
         if (!tracks.length) return false;
-        if (requester) tracks = tracks.map(info => ({ ...info, requester }));
+        if (requester) tracks = tracks.map(track => ({ track: track.track, info: { ...track.info, requester } }));
         this.tracks.push(...tracks);
         return true;
     }

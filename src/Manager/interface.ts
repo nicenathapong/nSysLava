@@ -1,7 +1,7 @@
 import { nSysNode } from "../Node"
 import { nSysPlayer } from "../Player"
 
-import { payloadData } from "../Node/interface"
+import { payloadData, lavalinkTrack } from "../Node/interface"
 
 export interface managerOptions {
     nodes: object[]
@@ -25,4 +25,12 @@ export interface ManagerEvents {
     nodeReconnecting: (node: nSysNode, retryAmout: number) => void
     nodeReconnectingFull: (node: nSysNode) => void
     playerReconnect: (player: nSysPlayer) => void
+    TrackStart: (player: nSysPlayer, track: lavalinkTrack) => void
+    TrackEnd: (player: nSysPlayer, track: lavalinkTrack) => void
+    TrackException: (player: nSysPlayer, track: lavalinkTrack) => void
+    TrackStuckEvent: (player: nSysPlayer, track: lavalinkTrack) => void
+    queueEnd: (player: nSysPlayer) => void
+    channelLeave: (player: nSysPlayer) => void
+    channelJoin: (player: nSysPlayer) => void
+    channelMove: (player: nSysPlayer) => void
 }

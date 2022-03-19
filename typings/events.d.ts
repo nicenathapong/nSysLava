@@ -1,5 +1,7 @@
 import { payloadData, lavalinkTrack } from './interface';
 
+import { nSysNode, nSysPlayer } from './index'
+
 export interface ConnectionEvents {
     connected: () => void
     disconnected: () => void
@@ -16,6 +18,14 @@ export interface ManagerEvents {
     nodeReconnecting: (node: nSysNode, retryAmout: number) => void
     nodeReconnectingFull: (node: nSysNode) => void
     playerReconnect: (player: nSysPlayer) => void
+    TrackStart: (player: nSysPlayer, track: lavalinkTrack) => void
+    TrackEnd: (player: nSysPlayer, track: lavalinkTrack) => void
+    TrackException: (player: nSysPlayer, track: lavalinkTrack) => void
+    TrackStuckEvent: (player: nSysPlayer, track: lavalinkTrack) => void
+    queueEnd: (player: nSysPlayer) => void
+    channelLeave: (player: nSysPlayer) => void
+    channelJoin: (player: nSysPlayer) => void
+    channelMove: (player: nSysPlayer) => void
 }
 
 export interface NodeEvents {
@@ -34,4 +44,7 @@ export interface PlayerEvents {
     TrackException: (track: lavalinkTrack) => void
     TrackStuckEvent: (track: lavalinkTrack) => void
     queueEnd: () => void
+    channelLeave: () => void
+    channelJoin: () => void
+    channelMove: () => void
 }

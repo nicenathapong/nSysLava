@@ -41,6 +41,7 @@ export class nSysQueue {
                     if (!this.isAutoplay) {
                         this.current = null;
                         this.player.emit('queueEnd');
+                        this.player.manager.emit('queueEnd', this.player);
                         return false
                     }
                     let toLoad = `https://www.youtube.com/watch?v=${this.current?.info?.identifier ?? 'G0iN4jhaKqw'}&list=RD${this.current?.info?.identifier ?? 'G0iN4jhaKqw'}&start_radio=1`

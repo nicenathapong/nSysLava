@@ -22,18 +22,6 @@ export class nSysManager extends TypedEmitter<ManagerEvents> {
                 ]
             ))
         );
-
-        // handles events from nodes
-        Array.from(this.nodes.values()).forEach(node => this.handlesNodeEvents(node));
-    }
-
-    private handlesNodeEvents(node: nSysNode) {
-        node.on('sendGatewayPayload', (guildId: string, payload: payloadData) => this.emit('sendGatewayPayload', guildId, payload))
-        node.on('connected', () => this.emit('nodeConnect', node));
-        node.on('disconnected', () => this.emit('nodeDisconnect', node))
-        node.on('reconnecting', retryAmout => this.emit('nodeReconnecting', node, retryAmout));
-        node.on('reconnectingFull', () => this.emit('nodeReconnectingFull', node));
-        node.on('playerReconnect', player => this.emit('playerReconnect', player));
     }
 
     handleVoiceUpdate(update: VoiceUpdate): void {
@@ -77,7 +65,6 @@ export class nSysManager extends TypedEmitter<ManagerEvents> {
 
     addNode(nodeConfig: NodeConfig): nSysNode {
         const node = new nSysNode(nodeConfig, this);
-        this.handlesNodeEvents(node);
         this.nodes.set(node.name, node);
         return node;
     }

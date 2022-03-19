@@ -41,10 +41,16 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
             if (!payload.channel_id && this.channelId) { // channelLeave
                 this.channelId = null;
                 this.voiceState = {};
-            } else if (payload.channel_id && this.channelId) { // channelJoin
+                this.emit('channelLeave');
+                this.manager.emit('channelLeave', this)
+            } else if (payload.channel_id && this.channelId) { // channelMove
                 this.channelId = payload.channel_id
-            } else if (payload.channel_id !== this.channelId) { // channelMove
+                this.emit('channelMove');
+                this.manager.emit('channelMove', this)
+            } else if (payload.channel_id !== this.channelId) { // channelJoin
                 this.channelId = payload.channel_id ?? null;
+                this.emit('channelJoin');
+                this.manager.emit('channelJoin', this);
             }
             // if (this.voiceState.sessionId === payload.session_id) return;
             this.voiceState.sessionId = payload.session_id;
@@ -62,7 +68,7 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
         if (clearVoiceState) this.voiceState = {};
         this.isDeafened = options?.deafened ? true : false;
         this.isMuted = options?.muted ? true : false;
-        this.node.emit('sendGatewayPayload', this.guildId, {
+        const data = {
             op: 4,
             d: {
                 guild_id: this.guildId,
@@ -70,7 +76,9 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
                 self_deaf: this.isDeafened,
                 self_mute: this.isMuted
             }
-        });
+        }
+        this.node.emit('sendGatewayPayload', this.guildId, data);
+        this.manager.emit('sendGatewayPayload', this.guildId, data);
         return this;
     }
 

@@ -64,13 +64,18 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
             this.isConnected = true;
             if (this.players.size) Array.from(this.players.values()).forEach(async player => this.playerReconnect(player));
             this.emit('connected');
+            this.manager.emit('nodeConnect', this)
         });
         this.conn.on('disconnected', () => {
             this.isConnected = false;
             if (this.players.size) Array.from(this.players.values()).forEach(player => player.isPlaying = false);
             this.emit('disconnected');
+            this.manager.emit('nodeDisconnect', this);
         });
-        this.conn.on('reconnecting', (retryAmout: number) => this.emit('reconnecting', retryAmout));
+        this.conn.on('reconnecting', (retryAmout: number) => {
+            this.emit('reconnecting', retryAmout);
+            this.manager.emit('nodeReconnecting', this, retryAmout);
+        });
         this.conn.on('reconnectingFull', () => {
             if (this.players.size && Array.from(manager.nodes.values()).find(node => node.isConnected)) for (const player of Array.from(this.players.values())) {
                 const node = Array.from(manager.nodes.values()).filter(node => node.isConnected).sort((a, b) => a.players.size - b.players.size).reverse().at(0);
@@ -80,7 +85,8 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
                 this.players.delete(player.guildId);
                 this.playerReconnect(player);
             }
-            this.emit('reconnectingFull')
+            this.emit('reconnectingFull');
+            this.manager.emit('nodeReconnectingFull', this);
         });
         this.conn.on('message', async message => {
             switch (message.op) {
@@ -100,15 +106,23 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
                         switch (message.type) {
                             case 'TrackStartEvent':
                                 player.isPlaying = true;
-                                return player.emit('TrackStart', track);
+                                player.emit('TrackStart', track);
+                                player.manager.emit('TrackStart', player, track);
+                                break;
                             case 'TrackEndEvent':
                                 player.isPlaying = false;
                                 if (message.reason !== 'REPLACED') await player.queue.next();
-                                return player.emit('TrackEnd', track);
+                                player.emit('TrackEnd', track);
+                                player.manager.emit('TrackEnd', player, track);
+                                break;
                             case 'TrackExceptionEvent':
-                                return player.emit('TrackException', track);
+                                player.emit('TrackException', track);
+                                player.manager.emit('TrackException', player, track);
+                                break;
                             case 'TrackStuckEvent':
-                                return player.emit('TrackStuckEvent', track);
+                                player.emit('TrackStuckEvent', track);
+                                player.manager.emit('TrackStuckEvent', player, track);
+                                break;
                         }
                     };
                     break;
@@ -126,6 +140,7 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
             await player.play(player.queue.current.track, false);
             player.seek(player.position);
             this.emit('playerReconnect', player);
+            this.manager.emit('playerReconnect', player);
         }
     }
 

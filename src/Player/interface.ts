@@ -21,4 +21,7 @@ export interface playerEvents {
     TrackException: (track: lavalinkTrack) => void
     TrackStuckEvent: (track: lavalinkTrack) => void
     queueEnd: () => void
+    channelLeave: () => void
+    channelJoin: () => void
+    channelMove: () => void
 }

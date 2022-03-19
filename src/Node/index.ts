@@ -42,9 +42,9 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
         playingPlayers: 0,
         uptime: 0
     }
-    public manager?: nSysManager
+    public manager: nSysManager
 
-    constructor(config: NodeConfig, manager?: nSysManager) {
+    constructor(config: NodeConfig, manager: nSysManager) {
         super();
         this.isConnected = false;
         this.name = config.name ?? config.host;
@@ -62,14 +62,26 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
         // handles events from nSysConnection
         this.conn.on('connected', () => {
             this.isConnected = true;
+            if (this.players.size) Array.from(this.players.values()).forEach(async player => this.playerReconnect(player));
             this.emit('connected');
         });
         this.conn.on('disconnected', () => {
             this.isConnected = false;
+            if (this.players.size) Array.from(this.players.values()).forEach(player => player.isPlaying = false);
             this.emit('disconnected');
         });
         this.conn.on('reconnecting', (retryAmout: number) => this.emit('reconnecting', retryAmout));
-        this.conn.on('reconnectingFull', () => this.emit('reconnectingFull'));
+        this.conn.on('reconnectingFull', () => {
+            if (this.players.size && Array.from(manager.nodes.values()).find(node => node.isConnected)) for (const player of Array.from(this.players.values())) {
+                const node = Array.from(manager.nodes.values()).filter(node => node.isConnected).sort((a, b) => a.players.size - b.players.size).reverse().at(0);
+                if (!node) return;
+                player.node = node;
+                node.players.set(player.guildId, player);
+                this.players.delete(player.guildId);
+                this.playerReconnect(player);
+            }
+            this.emit('reconnectingFull')
+        });
         this.conn.on('message', async message => {
             switch (message.op) {
                 case 'playerUpdate':
@@ -77,13 +89,14 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
                     if (player) player.position = message.state.position;
                     break;
                 case 'stats':
-                    return this.stats = message
+                    return this.stats = message;
                 case 'event':
                     {
                         if (message.type === 'WebSocketClosedEvent') return;
                         const player = this.players.get(message.guildId);
                         if (!player) return;
                         const track = this.decodeTrack(message.track);
+                        if (player.queue.current?.track === track.track && player.queue.current?.info?.requester) track.info.requester = player.queue.current.info.requester;
                         switch (message.type) {
                             case 'TrackStartEvent':
                                 player.isPlaying = true;
@@ -106,7 +119,17 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
         this.manager = manager;
     }
 
-    decodeTrack(track: string): lavalinkTrack {
+    private async playerReconnect(player: nSysPlayer) {
+        if (!player.isPlaying && player.channelId && player.queue.current) {
+            let channelId = player.channelId
+            player.connect(channelId, { deafened: player.isDeafened, muted: player.isMuted }, false);
+            await player.play(player.queue.current.track);
+            player.seek(player.position);
+            this.emit('playerReconnect', player);
+        }
+    }
+
+    private decodeTrack(track: string): lavalinkTrack {
         const decoded = decode(track)
         return {
             track, info: {

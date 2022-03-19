@@ -8,19 +8,21 @@ import { playerEvents, VoiceUpdate, connectOptions } from "./interface";
 
 export class nSysPlayer extends TypedEmitter<playerEvents> {
     public readonly queue: nSysQueue;
-    public readonly node: nSysNode
+    public node: nSysNode
     public readonly userId: string | null;
     public readonly guildId: string
     public channelId: string | null = null;
     public isPlaying: boolean = false;
     public position: number = 0;
     public isPaused: boolean = false;
+    public isDeafened: boolean = false;
+    public isMuted: boolean = false;
     
-    public manager?: nSysManager
+    public manager: nSysManager
 
-    private voiceState: Record<string, any> = {};
+    private voiceState: Record<string, any>= {}
 
-    constructor(node: nSysNode, guildId: string, manager?: nSysManager) {
+    constructor(node: nSysNode, guildId: string, manager: nSysManager) {
         super();
         this.queue = new nSysQueue(this);
         this.node = node;
@@ -31,9 +33,9 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
     }
 
     handleVoiceUpdate(payload: VoiceUpdate): void {
-        if (Object.keys(payload).includes('token')) {
+        if (Object.keys(payload).includes('token')) { // VOICE_STATE_UPDATE
             this.voiceState.event = payload;
-        } else {
+        } else { // VOICE_SERVER_UPDATE
             if (payload.user_id !== this.node.userId) return;
             this.voiceState.sessionId = payload.session_id;
             if (!payload.channel_id && this.channelId) { // channelLeave
@@ -44,9 +46,9 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
             } else if (payload.channel_id !== this.channelId) { // channelMove
                 this.channelId = payload.channel_id ?? null;
             }
-            if (this.voiceState.sessionId === payload.session_id) return;
+            // if (this.voiceState.sessionId === payload.session_id) return;
             this.voiceState.sessionId = payload.session_id;
-        }
+        };
         if (this.voiceState.event && this.voiceState.sessionId) {
             this.node.conn.send({
                 op: 'voiceUpdate',
@@ -56,16 +58,17 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
         }
     }
 
-    connect(channelId: string | null, options?: connectOptions): this {
-        this.voiceState = {};
-        this.channelId = channelId;
+    connect(channelId: string | null, options?: connectOptions, clearVoiceState = true): this {
+        if (clearVoiceState) this.voiceState = {};
+        this.isDeafened = options?.deafened ? true : false;
+        this.isMuted = options?.muted ? true : false;
         this.node.emit('sendGatewayPayload', this.guildId, {
             op: 4,
             d: {
                 guild_id: this.guildId,
-                channel_id: this.channelId,
-                self_deaf: options?.deafened ?? false,
-                self_mute: options?.muted ?? false
+                channel_id: channelId,
+                self_deaf: this.isDeafened,
+                self_mute: this.isMuted
             }
         });
         return this;

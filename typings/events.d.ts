@@ -15,6 +15,7 @@ export interface ManagerEvents {
     nodeDisconnected: (node: nSysNode) => void
     nodeReconnecting: (node: nSysNode, retryAmout: number) => void
     nodeReconnectingFull: (node: nSysNode) => void
+    playerReconnect: (player: nSysPlayer) => void
 }
 
 export interface NodeEvents {
@@ -23,6 +24,7 @@ export interface NodeEvents {
     reconnecting: (retryAmout: number) => void
     reconnectingFull: () => void
     sendGatewayPayload: (guildId: string, payload: payloadData) => void
+    playerReconnect: (player: nSysPlayer) => void
 }
 
 export interface PlayerEvents {

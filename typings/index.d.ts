@@ -57,8 +57,8 @@ export class nSysNode extends TypedEmitter<NodeEvents> {
     public search: boolean
     public play: boolean
     public stats: lavalinkStats;
-    public manager?: nSysManager;
-    constructor(config: NodeConfig, manager?: nSysManager);
+    public manager: nSysManager;
+    constructor(config: NodeConfig, manager: nSysManager);
     public handleVoiceUpdate(update: VoiceUpdate): void;
     public connect(userId: string): Promise<void>
     public disconnect(): boolean;
@@ -77,8 +77,8 @@ export class nSysPlayer extends TypedEmitter<PlayerEvents> {
     public isPlaying: boolean
     public position: number;
     public isPaused: boolean;
-    public manager?: nSysManager;
-    constructor(node: nSysNode, guildId: string, manager?: nSysManager);
+    public manager: nSysManager;
+    constructor(node: nSysNode, guildId: string, manager: nSysManager);
     public handleVoiceUpdate(payload: VoiceUpdate): void
     public connect(channelId: string | null, options?: connectOptions): this;
     public disconnect(): this;

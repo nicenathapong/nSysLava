@@ -10,8 +10,8 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
     public readonly httpUrl: string
     public readonly clientName: string | undefined
     public reconnect: ConnectionConfig['reconnect'] | undefined
-    private reconnectDefault: number
 
+    private reconnectDefault: number
     private readonly authorization: string
     private ws: WebSocket | null = null
     private payloadQueue: object[] = []
@@ -45,7 +45,7 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
                 if (this.reconnect.retryAmout === 0) return this.emit('reconnectingFull');
                 await new Promise(resolve => setTimeout(resolve, this.reconnect?.delay ?? 3000));
                 return this.connect(userId);  
-            }
+            } else this.emit('reconnectingFull');
             return;
         }
         this.ws = new WebSocket(this.url, {
@@ -71,7 +71,7 @@ export default class nSysConnection extends TypedEmitter<ConnectionEvents> {
                 this.reconnect.retryAmout--
                 if (this.reconnect.retryAmout === 0) return this.emit('reconnectingFull')
                 await new Promise(resolve => setTimeout(resolve, this.reconnect?.delay ?? 3000))
-            }
+            } else this.emit('reconnectingFull');
             if (this.isNotReconnect) this.isNotReconnect = false;
         });
         this.ws.on('message', (message: string) => {

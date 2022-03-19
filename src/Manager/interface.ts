@@ -1,4 +1,6 @@
 import { nSysNode } from "../Node"
+import { nSysPlayer } from "../Player"
+
 import { payloadData } from "../Node/interface"
 
 export interface managerOptions {
@@ -22,4 +24,5 @@ export interface ManagerEvents {
     nodeDisconnected: (node: nSysNode) => void
     nodeReconnecting: (node: nSysNode, retryAmout: number) => void
     nodeReconnectingFull: (node: nSysNode) => void
+    playerReconnect: (player: nSysPlayer) => void
 }

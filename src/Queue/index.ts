@@ -28,7 +28,6 @@ export class nSysQueue {
 
     remove(index: number): boolean {
         const track = this.tracks[index - 1];
-        console.log('index', index)
         if (!track) return false;
         this.tracks = this.tracks.filter(_ => _ !== track);
         return true;

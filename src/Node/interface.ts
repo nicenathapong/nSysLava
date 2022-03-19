@@ -1,3 +1,5 @@
+import { nSysPlayer } from "../Player"
+
 export interface NodeConfig {
     name?: string
     host: string
@@ -35,7 +37,8 @@ export interface lavalinkTrack {
         position: number
         title: string
         uri: string
-        sourceName: string
+        sourceName: string,
+        requester?: string
     }
 }
 
@@ -77,4 +80,5 @@ export interface nodeEvents {
     reconnecting: (retryAmout: number) => void
     reconnectingFull: () => void
     sendGatewayPayload: (guildId: string, payload: payloadData) => void
+    playerReconnect: (player: nSysPlayer) => void
 }

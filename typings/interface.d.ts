@@ -61,6 +61,7 @@ export interface lavalinkTrack {
         title: string
         uri: string
         sourceName: string
+        requester?: string
     }
 }
 

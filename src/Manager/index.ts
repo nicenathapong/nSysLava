@@ -18,7 +18,7 @@ export class nSysManager extends TypedEmitter<ManagerEvents> {
             nodes.map(node => (
                 [
                     node?.name ?? node?.host,
-                    new nSysNode(node)
+                    new nSysNode(node, this)
                 ]
             ))
         );
@@ -33,6 +33,7 @@ export class nSysManager extends TypedEmitter<ManagerEvents> {
         node.on('disconnected', () => this.emit('nodeDisconnect', node))
         node.on('reconnecting', retryAmout => this.emit('nodeReconnecting', node, retryAmout));
         node.on('reconnectingFull', () => this.emit('nodeReconnectingFull', node));
+        node.on('playerReconnect', player => this.emit('playerReconnect', player));
     }
 
     handleVoiceUpdate(update: VoiceUpdate): void {
@@ -48,7 +49,7 @@ export class nSysManager extends TypedEmitter<ManagerEvents> {
     }
 
     createPlater(guildId: string): nSysPlayer | null {
-        const node = Array.from(this.nodes.values()).filter(node => node.isConnected && node.play).sort((a, b) => a.players.size - b.players.size).at(0);
+        const node = Array.from(this.nodes.values()).filter(node => node.isConnected && node.play).sort((a, b) => a.players.size - b.players.size).reverse().at(0);
         if (!node) return null;
         return node.createPlater(guildId);
     }
@@ -75,7 +76,7 @@ export class nSysManager extends TypedEmitter<ManagerEvents> {
     }
 
     addNode(nodeConfig: NodeConfig): nSysNode {
-        const node = new nSysNode(nodeConfig);
+        const node = new nSysNode(nodeConfig, this);
         this.handlesNodeEvents(node);
         this.nodes.set(node.name, node);
         return node;

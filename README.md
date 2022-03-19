@@ -7,6 +7,8 @@
 
 ## **❤️ Interesting function / ฟังก์ชันที่น่าสนใจ**
 
+- **Best Reconnecting handles**
+- **Load Balance**
 - **Queue System**
 - **Autoplay**
 

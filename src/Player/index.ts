@@ -93,11 +93,11 @@ export class nSysPlayer extends TypedEmitter<playerEvents> {
     }
 
     async play(track: string | { track: string }, seek = true): Promise<this> {
-        if (typeof track !== 'string') track = track.track;
+        if (typeof track == 'string') track = { track: track };
         await this.node.conn.send({
             op: 'play',
             guildId: this.guildId,
-            track
+            ...track
         }, true);
         if (seek) await this.seek(0);
         return this;

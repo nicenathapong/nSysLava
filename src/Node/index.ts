@@ -137,8 +137,7 @@ export class nSysNode extends TypedEmitter<nodeEvents> {
         if (!player.isPlaying && player.channelId && player.queue.current) {
             let channelId = player.channelId
             player.connect(channelId, { deafened: player.isDeafened, muted: player.isMuted }, false);
-            await player.play(player.queue.current.track, false);
-            player.seek(player.position);
+            await player.play({track:player.queue.current.track,startTime:player.position}, false);
             this.emit('playerReconnect', player);
             this.manager.emit('playerReconnect', player);
         }

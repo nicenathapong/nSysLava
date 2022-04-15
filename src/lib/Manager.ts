@@ -39,9 +39,9 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
         this.nodes.forEach(node => node.connect(this.userId));
     }
 
-    createPlayer(guildId: Snowflake): nSysPlayer | null {
+    createPlayer(guildId: Snowflake): nSysPlayer | undefined {
         const node = this.nodes.find(node => node.isConnected && node.isCanPlay);
-        if (!node) return null;
+        if (!node) return undefined;
         const player = new nSysPlayer({ manager: this, node, guildId });
         node.players.set(guildId, player);
         return player;

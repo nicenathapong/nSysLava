@@ -47,6 +47,12 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
         return player;
     }
 
+    getPlayer(guildId: Snowflake): nSysPlayer | undefined {
+        const node = this.nodes.find(node => node.players.has(guildId));
+        if (!node) return undefined;
+        return node.players.get(guildId);
+    }
+
     async loadTracks(search: string): Promise<ILavalinkLoadtracks> {
         const nodes = [...this.nodes.filter(node => node.isConnected && node.isCanSearch).values()];
         const node = nodes[Math.floor(Math.random()*nodes.length)];

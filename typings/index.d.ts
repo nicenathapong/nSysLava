@@ -69,6 +69,7 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
     handleVoiceUpdate(payload: IVoiceUpdate);
     connect(userId: Snowflake): void;
     createPlayer(guildId: Snowflake): nSysPlayer | null;
+    getPlayer(guildId: Snowflake): nSysPlayer | undefined;
     async loadTracks(search: string): Promise<ILavalinkLoadtracks>;
 }
 

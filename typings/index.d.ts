@@ -1,112 +1,123 @@
 import { TypedEmitter } from 'tiny-typed-emitter'
 
 import {
-    ConnectionConfig,
-    NodeConfig,
-    VoiceUpdate,
-    connectOptions,
-    lavalinkStats,
-    lavalinkLoadtracks,
-    lavalinkTrack
-} from './interface';
-
-import { loopMode } from './enum'
+    IConnectionEvents,
+    INodeEvents,
+    IManagerEvents,
+    IPlayerEvents
+} from './events';
 
 import {
-    ConnectionEvents,
-    ManagerEvents,
-    NodeEvents,
-    PlayerEvents
-} from './events'
+    IConnectionConfig,
+    INodeConfig,
+    IManagerConfig,
+    IPlayerConfig,
+    IQueueConfig,
+} from './config';
 
-export class nSysConnection extends TypedEmitter<ConnectionEvents> {
-    public connected: boolean
-    public readonly url: string
-    public readonly httpUrl: string;
-    public readonly clientName?: string;
-    public reconnect?: ConnectionConfig['reconnect'];
-    public constructor(config: ConnectionConfig);
-    public connect(userId: string): Promise<void | any>
-    public disconnect(): boolean;
-    public send(): Promise<void>;
+import {
+    ILavalinkStats,
+    ILavalinkLoadtracks,
+    IVoiceUpdate,
+    IPlayerConnectOptions,
+    ILavalinkTrack,
+} from './interfaces'
+
+import { PingResponseType } from './enums';
+
+import { Snowflake } from './types'
+
+export class nSysConnection extends TypedEmitter<IConnectionEvents> {
+    isOpen: boolean;
+    readonly wsUrl: string;
+    readonly httpUrl: string;
+    userId: string;
+    readonly authorization: string;
+    readonly clientName: string;
+    readonly reconnect: IConnectionConfig['reconnect'];
+    constructor(config: IConnectionConfig)
+    async connect(userId: Snowflake): Promise<PingResponseType>;
+    async send(data: object, promise: boolean): Promise<void>;
+    disconnect(): boolean;
+    flushQueue(): boolean;
 }
 
-export class nSysManager extends TypedEmitter<ManagerEvents> {
-    public readonly nodes: Map<string, nSysNode>
-    public userId: string | null;
-    public constructor(nodes: NodeConfig[]);
-    public handleVoiceUpdate(update: VoiceUpdate): void;
-    public connect(userId: string): Promise<void>
-    public createPlater(guildId: string): nSysPlayer | null
-    public getPlayer(guildId: string): nSysPlayer | null
-    public destroyPlayer(guildId: string): Promise<boolean>
-    public getNode(name: string): nSysNode | undefined
-    public addNode(nodeConfig: NodeConfig): nSysNode
-    public deleteNode(name: string): boolean;
-    public loadTracks(search: string): Promise<lavalinkLoadtracks>;
+export class nSysNode extends TypedEmitter<INodeEvents> {
+    readonly name: string
+    isConnected: boolean;
+    readonly conn: nSysConnection;
+    userId: Snowflake;
+    readonly manager: nSysManager;
+    readonly players: Collection<string, nSysPlayer>;
+    isCanSearch: boolean;
+    isCanPlay: boolean;
+    stats: ILavalinkStats;
+    constructor(config: INodeConfig, manager: nSysManager);
+    handleVoiceUpdate(payload: IVoiceUpdate): void;
+    async loadTracks(search: string): Promise<ILavalinkLoadtracks>;
+    async connect(userId: Snowflake): Promise<PingResponseType>;
 }
 
-export class nSysNode extends TypedEmitter<NodeEvents> {
-    public isConnected: boolean
-    public readonly name: string
-    public readonly config: NodeConfig
-    public readonly info: ConnectionConfig
-    public conn: nSysConnection
-    public userId: string | null;
-    public readonly players: Map<string, nSysPlayer>
-    public search: boolean
-    public play: boolean
-    public stats: lavalinkStats;
-    public manager: nSysManager;
-    constructor(config: NodeConfig, manager: nSysManager);
-    public handleVoiceUpdate(update: VoiceUpdate): void;
-    public connect(userId: string): Promise<void>
-    public disconnect(): boolean;
-    public createPlater(guildId: string): nSysPlayer | null;
-    public getPlayer(guildId: string): nSysPlayer | undefined;
-    public destroyPlayer(guildId: string): Promise<boolean>;
-    public loadTracks(search: string): Promise<lavalinkLoadtracks>
+export class nSysManager extends TypedEmitter<IManagerEvents> {
+    isReady: boolean;
+    userId: Snowflake;
+    readonly nodes: Collection<string, nSysNode>;
+    readonly players: Collection<string, nSysPlayer>;
+    constructor(config: IManagerConfig);
+    usePlugin(plugin: nSysLavaPlugin);
+    handleVoiceUpdate(payload: IVoiceUpdate);
+    connect(userId: Snowflake): void;
+    createPlayer(guildId: Snowflake): nSysPlayer | null;
+    async loadTracks(search: string): Promise<ILavalinkLoadtracks>;
 }
 
-export class nSysPlayer extends TypedEmitter<PlayerEvents> {
-    public readonly queue: nSysQueue;
-    public readonly node: nSysNode
-    public readonly userId: string | null;
-    public readonly guildId: string
-    public channelId: string | null
-    public isPlaying: boolean
-    public position: number;
-    public isPaused: boolean;
-    public manager: nSysManager;
-    constructor(node: nSysNode, guildId: string, manager: nSysManager);
-    public handleVoiceUpdate(payload: VoiceUpdate): void
-    public connect(channelId: string | null, options?: connectOptions): this;
-    public disconnect(): this;
-    public play(track: string | { track: string }): Promise<this>;
-    public stop(): Promise<this>;
-    public setPause(pause: boolean = true): Promise<this>;
-    public resume(): Promise<this>;
-    public seek(position: number): Promise<this>;
-    public destroy(): Promise<this>;
-    public setVolume(volume: number): Promise<this>;
+export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
+    readonly manager: nSysManager;
+    node: nSysNode | null;
+    readonly guildId: Snowflake;
+    channelId: Snowflake | null;
+    readonly queue: nSysQueue;
+    isDeafened: boolean;
+    isMuted: boolean;
+    position: number;
+    isPlaying: boolean;
+    isPaused: boolean;
+    constructor(config: IPlayerConfig)
+    handleVoiceUpdate(payload: IVoiceUpdate): void
+    connect(channelId: Snowflake | null, options?: IPlayerConnectOptions): this
+    async disconnect(): Promise<this>
+    async play(track: string | { track: string }, startTime: number): Promise<this>;
+    async stop(): Promise<this>;
+    async setPause(pause: boolean): Promise<this>;
+    async seek(position: number): Promise<this>;
+    async destroy(): Promise<this>;
+    async setVolume(volume: number): Promise<this>;
+    reconnectNode(node: nSysNode): void;
 }
 
 export class nSysQueue {
-    public player: nSysPlayer;
-    public previous: lavalinkTrack[]
-    public current: lavalinkTrack | null
-    public tracks: lavalinkTrack[]
-    public loop: loopMode
-    public isAutoplay: boolean;
+    readonly player: nSysPlayer;;
+    tracks: {
+        previous: ILavalinkTrack[]
+        current: ILavalinkTrack | null;
+        next: ILavalinkTrack[]
+    };
+    loopType: LoopModeType;
+    isAutoplay: boolean;
     constructor(player: nSysPlayer);
-    public add(tracks: lavalinkTrack | lavalinkTrack[], requester?: string): boolean;
-    public remove(index: number): boolean;
-    public start(): Promise<boolean>;
-    public skip(): Promise<void>;
-    public toPrevious(): Promise<boolean>;
-    public skipTo(index: number): void;
-    public clear(): boolean;
-    public shuffle(): boolean;
-    public setLoop(loop = loopMode.NONE): boolean;
-    public setAutoplay(bool = true): void;
+    add(tracks: ILavalinkTrack | ILavalinkTrack[], requester: Snowflake): boolean;
+    remove(index: number): boolean;
+    async start(): Promise<boolean>;
+    async skip(): Promise<void>;
+    async previous(): Promise<boolean>;
+    skipTo(index: number);
+    clear(): boolean;
+    shuffle(): boolean;
+    setLoop(type: LoopModeType): boolean;
+    setAutoplay(bool: boolean): boolean;
+}
+
+export class nSysLavaPlugin {
+    load(manager: nSysManager): void;
+    unload(manager: nSysManager): void;
 }

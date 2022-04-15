@@ -1,4 +1,4 @@
-import type { nSysNode } from './index';
+import type { nSysNode } from '../lib/Node';
 import type { Snowflake } from './types'
 import type { ILavalinkTrack, IGatewayPayload } from './interfaces'
 

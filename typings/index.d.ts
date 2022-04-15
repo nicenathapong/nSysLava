@@ -1,13 +1,14 @@
-import { TypedEmitter } from 'tiny-typed-emitter'
+import type { TypedEmitter } from 'tiny-typed-emitter'
+import type Collection from '@discordjs/collection';
 
-import {
+import type {
     IConnectionEvents,
     INodeEvents,
     IManagerEvents,
     IPlayerEvents
 } from './events';
 
-import {
+import type {
     IConnectionConfig,
     INodeConfig,
     IManagerConfig,
@@ -15,7 +16,7 @@ import {
     IQueueConfig,
 } from './config';
 
-import {
+import type {
     ILavalinkStats,
     ILavalinkLoadtracks,
     IVoiceUpdate,
@@ -23,9 +24,9 @@ import {
     ILavalinkTrack,
 } from './interfaces'
 
-import { PingResponseType } from './enums';
+import type { PingResponseType } from './enums';
 
-import { Snowflake } from './types'
+import type { Snowflake } from './types'
 
 export class nSysConnection extends TypedEmitter<IConnectionEvents> {
     isOpen: boolean;

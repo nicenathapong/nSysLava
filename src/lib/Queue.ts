@@ -51,7 +51,7 @@ export class nSysQueue {
                             if (this.tracks.current) this.player.emit('TrackException', this.tracks.current);
                             return false;
                         }
-                        this.add(result.tracks[0], this.tracks.current?.info?.requester);
+                        this.add(result.tracks[1], this.tracks.current?.info?.requester);
                         this._next();
                         return true;
                     }

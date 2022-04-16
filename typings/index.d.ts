@@ -84,6 +84,7 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
     position: number;
     isPlaying: boolean;
     isPaused: boolean;
+    volume: number;
     constructor(config: IPlayerConfig)
     handleVoiceUpdate(payload: IVoiceUpdate): void
     connect(channelId: Snowflake | null, options?: IPlayerConnectOptions): this

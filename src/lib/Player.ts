@@ -26,6 +26,7 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
     public position: number = 0;
     public isPlaying: boolean = false;
     public isPaused: boolean = false;
+    public volume: number = 100;
 
     private _voiceState: IPlayerVoiceState = {};
     private readonly _payloadQueue: object[] = [];
@@ -110,6 +111,7 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
     }
 
     async setPause(pause: boolean): Promise<this> {
+        this.isPaused = pause;
         await this._sendToNode(
             this._createPayload('pause', {
                 pause
@@ -135,6 +137,7 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
     }
 
     async setVolume(volume: number): Promise<this> {
+        this.volume = volume;
         await this._sendToNode(
             this._createPayload('volume', {
                 volume

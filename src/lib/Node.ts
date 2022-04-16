@@ -75,7 +75,7 @@ export class nSysNode extends TypedEmitter<INodeEvents> {
     }
 
     async loadTracks(search: string): Promise<ILavalinkLoadtracks> {
-        const { data } = await axios.get(`${this.conn.httpUrl}/loadtracks?identifier=${search}`, {
+        const { data } = await axios.get(`${this.conn.httpUrl}/loadtracks?identifier=${encodeURIComponent(search)}`, {
             headers: { authorization: this.conn.authorization }
         }).catch(() => ({
             data: {

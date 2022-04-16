@@ -47,11 +47,13 @@ export class nSysQueue {
                     if (this.isAutoplay) {
                         const identifier = this.tracks.current?.info?.identifier ?? 'AUP3OI9Yhmc';
                         const result = await this.player.manager.loadTracks(`https://www.youtube.com/watch?v=${identifier}&list=RD${identifier}&start_radio=1`);
+                        result.tracks.shift();
                         if (!result.tracks.length) {
                             if (this.tracks.current) this.player.emit('TrackException', this.tracks.current);
                             return false;
                         }
-                        this.add(result.tracks[1], this.tracks.current?.info?.requester);
+                        const randomTrack = result.tracks[Math.floor(Math.random()*result.tracks.length)];
+                        this.add(randomTrack, this.tracks.current?.info?.requester);
                         this._next();
                         return true;
                     }

@@ -52,6 +52,7 @@ export class nSysQueue {
                             return false;
                         }
                         this.add(result.tracks[0], this.tracks.current?.info?.requester);
+                        this._next();
                         return true;
                     }
                     this.tracks.current = null;

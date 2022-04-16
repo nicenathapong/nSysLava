@@ -146,7 +146,7 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
     reconnectNode(node: nSysNode): void {
         this.node = node;
         if (this.channelId) {
-            this.connect(this.channelId);
+            this.connect(this.channelId, { muted: this.isMuted, deafened: this.isDeafened });
             if (this.queue.tracks.current) {
                 this.play(this.queue.tracks.current.track, this.position);
             }

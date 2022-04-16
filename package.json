@@ -1,6 +1,6 @@
 {
   "name": "nsyslava",
-  "version": "2.0.35",
+  "version": "2.0.4",
   "description": "Lavalink client with lots of extra functionality, easy to use and well optimized.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -24,7 +24,6 @@
     "@types/events": "^3.0.0",
     "@types/ws": "^8.5.2",
     "axios": "^0.26.1",
-    "discord.js": "^13.6.0",
     "tiny-typed-emitter": "^2.1.0",
     "ws": "^8.5.0"
   }

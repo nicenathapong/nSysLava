@@ -153,6 +153,7 @@ export class nSysNode extends TypedEmitter<INodeEvents> {
                 if (!node) return;
                 player.node = node;
                 node.players.set(player.guildId, player);
+                player.reconnectNode(node);
             });
         } else {
             this.manager.isReady = false;

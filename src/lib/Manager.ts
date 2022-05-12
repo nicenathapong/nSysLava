@@ -43,6 +43,7 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
         const node = this.nodes.find(node => node.isConnected && node.isCanPlay);
         if (!node) return undefined;
         const player = new nSysPlayer({ manager: this, node, guildId });
+        this.emit('playerCreate', player);
         node.players.set(guildId, player);
         return player;
     }

@@ -1,4 +1,5 @@
 import type { nSysNode } from './index';
+import type { nSysPlayer } from './index';
 import type { Snowflake } from './types'
 import type { ILavalinkTrack, IGatewayPayload } from './interfaces'
 
@@ -24,6 +25,7 @@ export interface IManagerEvents {
     nodeDisconnect: (node: nSysNode) => void;
     nodeReconnect: (node: nSysNode, retryAmout: number) => void;
     nodeOffline: (node: nSysNode) => void;
+    playerCreate: (player: nSysPlayer) => void;
 }
 
 export interface IPlayerEvents {

@@ -30,6 +30,7 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
 
     private _voiceState: IPlayerVoiceState = {};
     private readonly _payloadQueue: object[] = [];
+    private readonly _props: { [key: string]: any } = {};
 
     constructor(config: IPlayerConfig) {
         super();
@@ -37,6 +38,14 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
         this.guildId = config.guildId;
         this.node = config.node;
         this.queue = new nSysQueue(this);
+    }
+
+    set(key: string, value: any) {
+        this._props[key] = value;
+    }
+
+    get(key: string) {
+        return this._props[key];
     }
 
     handleVoiceUpdate(payload: IVoiceUpdate): void {

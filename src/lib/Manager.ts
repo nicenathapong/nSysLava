@@ -15,6 +15,8 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
     public userId: Snowflake = "";
     public readonly nodes: Collection<string, nSysNode>;
     public readonly players: Collection<string, nSysPlayer> = new Collection();
+    
+    private readonly _props: { [key: string]: any } = {};
 
     constructor(config: IManagerConfig) {
         super();
@@ -22,6 +24,14 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
             _.name ?? _.host,
             new nSysNode(_, this)
         ]));
+    }
+
+    set(key: string, value: any) {
+        this._props[key] = value;
+    }
+
+    get(key: string) {
+        return this._props[key];
     }
 
     usePlugin(plugin: nSysLavaPlugin) {

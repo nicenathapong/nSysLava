@@ -46,6 +46,8 @@ export class nSysNode extends TypedEmitter<INodeEvents> {
         },
     };
 
+    private readonly _props: { [key: string]: any } = {};
+
     constructor(config: INodeConfig, manager: nSysManager) {
         super();
         this.name = config.name ?? config.host;
@@ -68,6 +70,14 @@ export class nSysNode extends TypedEmitter<INodeEvents> {
         this.conn.on('reconnect', (retryAmout: number) => this._connReconnect(retryAmout));
         this.conn.on('offline', () => this._connOffline());
     };
+
+    set(key: string, value: any) {
+        this._props[key] = value;
+    }
+
+    get(key: string) {
+        return this._props[key];
+    }
 
     handleVoiceUpdate(payload: IVoiceUpdate): void {
         const player = this.players.get(payload?.guild_id);

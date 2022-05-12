@@ -54,6 +54,8 @@ export class nSysNode extends TypedEmitter<INodeEvents> {
     isCanPlay: boolean;
     stats: ILavalinkStats;
     constructor(config: INodeConfig, manager: nSysManager);
+    set(key: value, value: any): void;
+    get(ket: string): any;
     handleVoiceUpdate(payload: IVoiceUpdate): void;
     async loadTracks(search: string): Promise<ILavalinkLoadtracks>;
     async connect(userId: Snowflake): Promise<PingResponseType>;
@@ -65,6 +67,8 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
     readonly nodes: Collection<string, nSysNode>;
     readonly players: Collection<string, nSysPlayer>;
     constructor(config: IManagerConfig);
+    set(key: value, value: any): void;
+    get(ket: string): any;
     usePlugin(plugin: nSysLavaPlugin);
     handleVoiceUpdate(payload: IVoiceUpdate);
     connect(userId: Snowflake): void;
@@ -86,6 +90,8 @@ export class nSysPlayer extends TypedEmitter<IPlayerEvents> {
     isPaused: boolean;
     volume: number;
     constructor(config: IPlayerConfig)
+    set(key: value, value: any): void;
+    get(ket: string): any;
     handleVoiceUpdate(payload: IVoiceUpdate): void
     connect(channelId: Snowflake | null, options?: IPlayerConnectOptions): this
     async disconnect(): Promise<this>

@@ -129,24 +129,25 @@ export class nSysNode extends TypedEmitter<INodeEvents> {
                 if (!player) return;
                 const track = this._decodeTrack(message.track);
                 if (
+                    track &&
                     player.queue.tracks.current?.track === track.track &&
                     player.queue.tracks.current?.info?.requester?.length
                 ) track.info.requester = player.queue.tracks.current.info.requester
                 switch (message.type) {
                     case 'TrackStartEvent':
                         player.isPlaying = true;
-                        player.emit('TrackStart', track);
+                        if (track) player.emit('TrackStart', track);
                         break;
                     case 'TrackEndEvent':
                         player.isPlaying = false;
                         if (message.reason !== 'REPLACED') await player.queue.start();
-                        player.emit('TrackEnd', track);
+                        if (track) player.emit('TrackEnd', track);
                         break;
                     case 'TrackExceptionEvent':
-                        player.emit('TrackException', track);
+                        if (track) player.emit('TrackException', track);
                         break;
                     case 'TrackStuckEvent':
-                        player.emit('TrackStuckEvent', track);
+                        if (track) player.emit('TrackStuckEvent', track);
                         break;
                 }
             } break;
@@ -185,21 +186,25 @@ export class nSysNode extends TypedEmitter<INodeEvents> {
         this.emit('offline');
     }
 
-    private _decodeTrack(track: string): ILavalinkTrack {
-        const decoded = decode(track);
-        return {
-            track,
-            info: {
-                identifier: decoded.identifier,
-                isSeekable: !decoded.isStream,
-                author: decoded.author,
-                length: Number(decoded.length),
-                isStream: decoded.isStream,
-                position: Number(decoded.position),
-                title: decoded.title,
-                uri: decoded.uri ?? '',
-                sourceName: decoded.source
+    private _decodeTrack(track: string): ILavalinkTrack | null {
+        try {
+            const decoded = decode(track);
+            return {
+                track,
+                info: {
+                    identifier: decoded.identifier,
+                    isSeekable: !decoded.isStream,
+                    author: decoded.author,
+                    length: Number(decoded.length),
+                    isStream: decoded.isStream,
+                    position: Number(decoded.position),
+                    title: decoded.title,
+                    uri: decoded.uri ?? '',
+                    sourceName: decoded.source
+                }
             }
+        } catch (e) {
+            return null;
         }
     }
 

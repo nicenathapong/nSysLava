@@ -50,7 +50,10 @@ export class nSysManager extends TypedEmitter<IManagerEvents> {
     }
 
     createPlayer(guildId: Snowflake): nSysPlayer | undefined {
-        const node = this.nodes.find(node => node.isConnected && node.isCanPlay);
+        const node = this.nodes
+            .filter(node => node.isConnected && node.isCanPlay)
+            .sort((a, b) => a.players.size - b.players.size)
+            .at(0);
         if (!node) return undefined;
         const player = new nSysPlayer({ manager: this, node, guildId });
         this.emit('playerCreate', player);
